@@ -1,9 +1,5 @@
 # home-lab-infrastructure
 Home lab for learning enterprise IT: networking, Active Directory, security, and automation
-# Home Lab Infrastructure
-
-## Overview
-# Home Lab Infrastructure
 
 ## Overview
 This project documents the design and implementation of a home lab environment built to simulate a small enterprise network.
