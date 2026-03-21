@@ -3,39 +3,49 @@ Home lab for learning enterprise IT: networking, Active Directory, security, and
 # Home Lab Infrastructure
 
 ## Overview
-This repository documents my home lab environment built to develop skills in networking, Active Directory, security, and automation.
+# Home Lab Infrastructure
 
-The lab is designed to simulate a small enterprise environment using VLAN segmentation, firewall rules, and virtualised infrastructure.
+## Overview
+This project documents the design and implementation of a home lab environment built to simulate a small enterprise network.
 
----
-
-## Goals
-- Progress from 2nd line to 3rd line / infrastructure role
-- Gain hands-on experience with:
-  - OPNsense firewall
-  - VLANs and network segmentation
-  - Active Directory & Group Policy
-  - PowerShell automation
-  - Security monitoring (SIEM)
+The lab focuses on networking, Active Directory, security, and automation, with an emphasis on real-world architecture and troubleshooting.
 
 ---
 
-## Lab Stack
-- Firewall: OPNsense (CWWK N97 appliance)
-- Virtualisation: Proxmox
-- Networking: Cisco CBS350
-- Clients: Windows 11
-- Servers: Windows Server
+## Objectives
+- Develop skills required for 3rd line / infrastructure roles
+- Gain hands-on experience with enterprise technologies
+- Build a demonstrable portfolio of practical work
 
 ---
 
-## Status
-🚧 In progress – building core network and firewall
+## Technologies Used
+- OPNsense (Firewall & Routing)
+- Cisco CBS350 (Managed Switch)
+- Proxmox (Virtualisation)
+- Windows Server (Active Directory, DNS, DHCP)
+- PowerShell (Automation)
 
 ---
 
-## Architecture (Planned)
+## Key Features
 - VLAN-based network segmentation
-- Centralised identity (Active Directory)
-- Secure firewall rules between networks
-- Future: SIEM + monitoring
+- Inter-VLAN routing via firewall
+- Role-based access control
+- Centralised identity management (AD)
+- Secure network design principles
+
+---
+
+## Current Status
+- [ ] Firewall deployment
+- [ ] VLAN configuration
+- [ ] Active Directory setup
+- [ ] Client integration
+- [ ] Security monitoring (planned)
+
+---
+
+## Lab Architecture
+Detailed design available in:
+- network-design/network-design.md
