@@ -1,5 +1,9 @@
 # Network Design
 
+## Network Topology
+
+![Network Diagram](diagram.png)
+
 ## VLANs
 
 | VLAN | Name     | Subnet           | Purpose              |
