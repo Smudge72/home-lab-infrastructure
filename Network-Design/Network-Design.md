@@ -1,4 +1,4 @@
-# Network Design
+m# Network Design
 
 See [Diagram.md](Diagram.md) for the full network topology diagram.
 
@@ -50,3 +50,9 @@ See [Diagram.md](Diagram.md) for the full network topology diagram.
 - Firewall used for all inter-VLAN routing to enforce security policies
 - Dedicated management VLAN for infrastructure devices
 - ISP router operates in upstream/bridge mode; all routing handled by OPNSense
+
+## Design Decisions
+
+- Firewall used as central routing point to maintain visibility and control
+- VLAN segmentation implemented to reduce risk of lateral movement
+- Separate client and server networks to enforce access control
