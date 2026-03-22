@@ -135,8 +135,12 @@ Default deny rules are applied between VLANs, with explicit allow rules configur
 
 ---
 
-## Design Approach
+## Example Firewall Rule
 
-Inter-VLAN routing is handled by the firewall to enforce security policies between network segments.
+Allow:
+- Source: VLAN 30 (Clients)
+- Destination: VLAN 20 (Servers)
+- Port: 3389 (RDP)
 
-Default deny rules are applied between VLANs, with explicit allow rules configured where required.
+Purpose:
+Allow administrative access to servers from client machines.
