@@ -44,4 +44,5 @@ The lab focuses on networking, Active Directory, security, and automation, with 
 
 ## Lab Architecture
 Detailed design available in:
-- network-design/network-design.md
+- [Network-Design/Network-Design.md](Network-Design/Network-Design.md)
+- [Network-Design/Diagram.md](Network-Design/Diagram.md)
