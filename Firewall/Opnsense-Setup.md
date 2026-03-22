@@ -94,3 +94,26 @@ Enable DHCP server on each VLAN interface:
 - [ ] Firewall rules configured
 - [ ] DHCP enabled on all VLANs
 - [ ] DNS resolver configured
+
+## Interface Mapping
+
+- igc0 → WAN (connected to ISP router)
+- igc1 → LAN (trunk to Cisco switch)
+
+---
+
+## VLAN Configuration
+
+- VLAN 10 – Management
+- VLAN 20 – Servers
+- VLAN 30 – Clients
+- VLAN 40 – Lab
+- VLAN 50 – Guest
+
+---
+
+## Design Approach
+
+Inter-VLAN routing is handled by the firewall to enforce security policies between network segments.
+
+Default deny rules are applied between VLANs, with explicit allow rules configured where required.
