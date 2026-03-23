@@ -46,3 +46,23 @@ The lab focuses on networking, Active Directory, security, and automation, with 
 Detailed design available in:
 - [Network-Design/Network-Design.md](Network-Design/Network-Design.md)
 - [Network-Design/Diagram.md](Network-Design/Diagram.md)
+
+- # Home Lab – Active Directory Environment
+
+## Overview
+Built a Windows-based enterprise lab using Hyper-V, including a Domain Controller, client machine, and Active Directory configuration.
+
+## Key Features
+- Active Directory Domain Services (AD DS)
+- Domain-joined client machine
+- Organisational Units & user management
+- Group Policy implementation
+
+## Tech Used
+- Windows Server 2022
+- Windows 11 Pro
+- Hyper-V
+
+## Documentation
+See full build notes:
+docs/ad-lab-build.md
