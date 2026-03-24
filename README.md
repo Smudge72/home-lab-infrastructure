@@ -2,61 +2,85 @@
 
 ## 📌 Overview
 
-Built a fully functional Windows enterprise lab environment using Hyper-V, including a Domain Controller, domain-joined client, and centralised management via Active Directory.
+Designed and built a fully functional on-premises-style Active Directory environment using Hyper-V to simulate real enterprise infrastructure.
+
+This lab demonstrates core system administration skills including domain services, networking, security, and troubleshooting.
 
 ---
 
-## 🧱 Infrastructure
+## 🧱 Architecture
 
-* **DC01** – Windows Server 2022 (Domain Controller)
-* **CLIENT01** – Windows 11 Pro (Domain-joined)
-* **Internal Network** – 192.168.100.0/24 (Hyper-V virtual switch)
+* **DC01** – Windows Server 2022 (Domain Controller, DNS)
+* **CLIENT01** – Windows 11 Pro (Domain-joined workstation)
+* **Network** – Internal Hyper-V switch (192.168.100.0/24)
 
 ---
 
 ## ⚙️ Key Features
 
 * Active Directory Domain Services (AD DS)
-* Organisational Unit (OU) structure
-* Domain user and group management
-* Group Policy implementation
-* File share with NTFS permissions
-* Centralised admin rights via security groups
+* Organisational Unit (OU) design (Users, Groups, Workstations)
+* Domain user authentication
+* Security group-based access control (IT-Admins)
+* Group Policy (GPO) for system restrictions and firewall rules
+* File share with NTFS + share permissions
+* Delegated local admin rights via AD groups
 
 ---
 
-## 🔧 Troubleshooting Highlights
+## 🔧 Troubleshooting & Key Challenges
 
-* Resolved VM connectivity issues (Layer 2 / virtual switch binding)
-* Diagnosed APIPA addressing and ARP failures
-* Identified and fixed asymmetric connectivity (firewall rules)
-* Implemented firewall rules via Group Policy
+### 🔹 VM Connectivity Failure
+
+* Issue: No communication between VMs (APIPA, ARP failure)
+* Root Cause: Broken Hyper-V switch / NIC binding
+* Resolution: Rebuilt virtual switch and reattached network adapters
+
+---
+
+### 🔹 Asymmetric Network Connectivity
+
+* Issue: Client → DC worked, DC → Client failed
+* Root Cause: Windows Firewall blocking inbound ICMP
+* Resolution: Enabled firewall rules and implemented via GPO
+
+---
+
+## 📸 Screenshots
+
+*(Add images here)*
+
+* Active Directory structure
+* Group Policy configuration
+* Hyper-V virtual machines
+* File share access
+
+---
+
+## 🧠 Skills Demonstrated
+
+* Hyper-V virtualisation
+* Windows Server administration
+* Active Directory configuration
+* DNS and IP networking
+* Firewall and security configuration
+* Group Policy management
+* Structured troubleshooting methodology
 
 ---
 
 ## 📁 Documentation
 
-Full build notes:
+Detailed build notes:
 docs/ad-lab-build.md
 
 ---
 
-## 🚀 Skills Demonstrated
+## 🚀 Next Steps
 
-* Virtualisation (Hyper-V)
-* Windows Server administration
-* Active Directory configuration
-* DNS and networking fundamentals
-* Group Policy management
-* Troubleshooting methodology
-
----
-
-## 📌 Next Steps
-
-* Automated drive mapping via GPO
-* Additional user roles (HR / restricted access)
-* PowerShell automation
-* Simulated helpdesk scenarios
+* Automate drive mapping via GPO
+* Introduce additional roles (HR, restricted users)
+* Implement PowerShell automation
+* Simulate helpdesk scenarios
 
 ---
