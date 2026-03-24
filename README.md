@@ -1,68 +1,62 @@
-# home-lab-infrastructure
-Home lab for learning enterprise IT: networking, Active Directory, security, and automation
+# 🖥️ Active Directory Home Lab (Hyper-V)
 
-## Overview
-This project documents the design and implementation of a home lab environment built to simulate a small enterprise network.
+## 📌 Overview
 
-The lab focuses on networking, Active Directory, security, and automation, with an emphasis on real-world architecture and troubleshooting.
+Built a fully functional Windows enterprise lab environment using Hyper-V, including a Domain Controller, domain-joined client, and centralised management via Active Directory.
 
 ---
 
-## Objectives
-- Develop skills required for 3rd line / infrastructure roles
-- Gain hands-on experience with enterprise technologies
-- Build a demonstrable portfolio of practical work
+## 🧱 Infrastructure
+
+* **DC01** – Windows Server 2022 (Domain Controller)
+* **CLIENT01** – Windows 11 Pro (Domain-joined)
+* **Internal Network** – 192.168.100.0/24 (Hyper-V virtual switch)
 
 ---
 
-## Technologies Used
-- OPNsense (Firewall & Routing)
-- Cisco CBS350 (Managed Switch)
-- Proxmox (Virtualisation)
-- Windows Server (Active Directory, DNS, DHCP)
-- PowerShell (Automation)
+## ⚙️ Key Features
+
+* Active Directory Domain Services (AD DS)
+* Organisational Unit (OU) structure
+* Domain user and group management
+* Group Policy implementation
+* File share with NTFS permissions
+* Centralised admin rights via security groups
 
 ---
 
-## Key Features
-- VLAN-based network segmentation
-- Inter-VLAN routing via firewall
-- Role-based access control
-- Centralised identity management (AD)
-- Secure network design principles
+## 🔧 Troubleshooting Highlights
+
+* Resolved VM connectivity issues (Layer 2 / virtual switch binding)
+* Diagnosed APIPA addressing and ARP failures
+* Identified and fixed asymmetric connectivity (firewall rules)
+* Implemented firewall rules via Group Policy
 
 ---
 
-## Current Status
-- [ ] Firewall deployment
-- [ ] VLAN configuration
-- [ ] Active Directory setup
-- [ ] Client integration
-- [ ] Security monitoring (planned)
+## 📁 Documentation
 
----
-
-## Lab Architecture
-Detailed design available in:
-- [Network-Design/Network-Design.md](Network-Design/Network-Design.md)
-- [Network-Design/Diagram.md](Network-Design/Diagram.md)
-
-- # Home Lab – Active Directory Environment
-
-## Overview
-Built a Windows-based enterprise lab using Hyper-V, including a Domain Controller, client machine, and Active Directory configuration.
-
-## Key Features
-- Active Directory Domain Services (AD DS)
-- Domain-joined client machine
-- Organisational Units & user management
-- Group Policy implementation
-
-## Tech Used
-- Windows Server 2022
-- Windows 11 Pro
-- Hyper-V
-
-## Documentation
-See full build notes:
+Full build notes:
 docs/ad-lab-build.md
+
+---
+
+## 🚀 Skills Demonstrated
+
+* Virtualisation (Hyper-V)
+* Windows Server administration
+* Active Directory configuration
+* DNS and networking fundamentals
+* Group Policy management
+* Troubleshooting methodology
+
+---
+
+## 📌 Next Steps
+
+* Automated drive mapping via GPO
+* Additional user roles (HR / restricted access)
+* PowerShell automation
+* Simulated helpdesk scenarios
+
+---
