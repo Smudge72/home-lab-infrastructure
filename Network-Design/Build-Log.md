@@ -10,7 +10,7 @@
 - Prepared OPNsense installation media
 - Planned interface mapping
 
-- PC Rebuild & Hardware Upgrade (AM4 Platform)
+## Phase 3 - PC Rebuild & Hardware Upgrade (AM4 Platform)**
 Overview
 
 This project documents the full dismantling, upgrade, and rebuild of a desktop PC using a new motherboard, CPU, and air cooler. The goal was to validate hardware functionality by achieving a successful POST and BIOS access.
