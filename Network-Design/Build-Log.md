@@ -185,5 +185,191 @@ This project demonstrates:
 
 Hardware troubleshooting under uncertainty
 Logical step-by-step validation
+
+# Home Lab Infrastructure Project
+
+## Overview
+
+This project documents the design, deployment, and troubleshooting of a home lab environment built using Proxmox VE and Windows Server.
+
+The goal of this lab is to simulate a real-world enterprise environment, focusing on virtualisation, networking, and Active Directory administration.
+
+---
+
+## Technologies Used
+
+* Proxmox VE (Type 1 Hypervisor)
+* Windows Server 2022
+* Hyper-V (initial lab phase)
+* Active Directory Domain Services (AD DS)
+* Windows Networking (TCP/IP, DNS, ICMP)
+* Linux (Proxmox CLI / recovery environment)
+
+---
+
+## Lab Architecture
+
+* Proxmox Host (Bare Metal)
+
+  * Management IP: 192.168.1.21
+
+* Virtual Machines:
+
+  * DC01 (Windows Server 2022)
+
+    * Role: Domain Controller
+    * IP: 192.168.100.10
+
+  * Client01 (Windows 10/11)
+
+    * Domain Joined
+    * IP: 192.168.100.20
+
+---
+
+## Key Features Implemented
+
+* Proxmox deployment on bare metal hardware
+* VM provisioning using VirtIO drivers
+* Windows Server installation and configuration
+* Active Directory domain setup
+* Domain user creation and authentication
+* Network configuration using static IP addressing
+* Remote Desktop access configuration
+* Firewall rule management (ICMP)
+
+---
+
+## Build Process
+
+### 1. Proxmox Installation
+
+* Created bootable USB using Rufus
+* Installed Proxmox VE (Graphical mode)
+* Verified access via:
+  https://192.168.1.21:8006
+
+### 2. Network Configuration
+
+* Identified connectivity issue due to WiFi usage
+* Resolved by switching to Ethernet
+* Verified with:
+  ping 192.168.1.21
+
+### 3. Root Password Recovery
+
+* Entered recovery mode
+
+* Remounted filesystem:
+  mount -o remount,rw /
+
+* Reset password:
+  passwd
+
+* Rebooted system
+
+---
+
+### 4. Windows Server VM Deployment
+
+* Created VM with:
+
+  * UEFI (OVMF)
+  * VirtIO SCSI disk
+  * 4GB RAM / 2 CPU cores
+
+* Resolved missing disk issue:
+
+  * Attached VirtIO ISO
+  * Loaded driver:
+    virtio-win\vioscsi\w11\amd64
+
+---
+
+### 5. Active Directory Setup
+
+* Promoted server to Domain Controller
+* Created domain users
+* Configured administrative privileges
+* Enabled RDP access
+
+---
+
+### 6. Network Troubleshooting
+
+#### Issue: APIPA Address (169.254.x.x)
+
+* Cause: DHCP failure
+* Fix: Assigned static IP addresses
+
+#### Issue: Ping Failure
+
+* Cause: Firewall blocking ICMP
+* Fix: Enabled ICMP echo rules
+
+---
+
+## Troubleshooting Highlights
+
+* Diagnosed virtual network misconfiguration
+* Resolved Proxmox access issues caused by incorrect physical networking
+* Fixed Linux authentication errors via filesystem remount
+* Loaded missing storage drivers during OS installation
+* Identified firewall-related connectivity problems
+
+---
+
+## Key Lessons Learned
+
+* Ethernet is critical for stable server environments
+* VirtIO drivers are required for optimal VM performance
+* APIPA addresses indicate DHCP failure
+* Linux recovery requires writable filesystem for changes
+* Firewall rules can block network diagnostics even when connectivity exists
+* VM boot order impacts installation behaviour
+
+---
+
+## Future Improvements
+
+* Add additional VMs (File Server, DHCP, DNS)
+* Implement Group Policy Objects (GPOs)
+* Configure VLANs and network segmentation
+* Introduce monitoring (e.g. Zabbix / Prometheus)
+* Automate VM deployment using scripts
+
+---
+
+## Repository Structure
+
+/home-lab-infrastructure
+│
+├── README.md
+├── docs/
+│   ├── build-log.md
+│   ├── troubleshooting.md
+│
+├── diagrams/
+│   └── lab-architecture.png
+│
+├── configs/
+│   └── network-config.txt
+
+---
+
+## Outcome
+
+* Fully functional virtualised lab environment
+* Working Active Directory domain
+* Multi-VM network with verified connectivity
+* Hands-on experience across:
+
+  * Virtualisation
+  * Networking
+  * Windows Server
+  * Linux administration
+
+---
+
 Ability to diagnose and resolve build issues
 Practical system integration skills
