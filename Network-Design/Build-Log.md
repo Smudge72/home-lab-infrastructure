@@ -340,22 +340,6 @@ The goal of this lab is to simulate a real-world enterprise environment, focusin
 
 ---
 
-## Repository Structure
-
-/home-lab-infrastructure
-│
-├── README.md
-├── docs/
-│   ├── build-log.md
-│   ├── troubleshooting.md
-│
-├── diagrams/
-│   └── lab-architecture.png
-│
-├── configs/
-│   └── network-config.txt
-
----
 
 ## Outcome
 
