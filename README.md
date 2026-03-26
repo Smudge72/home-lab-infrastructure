@@ -1,154 +1,305 @@
-# Home Lab Infrastructure Project
+# Active Directory Home Lab (Proxmox & Hyper-V)
 
 ## Overview
 
-This repository documents the design, build, and configuration of a fully functional home lab environment that simulates a small enterprise IT infrastructure.
+This project documents the design, deployment, and management of a fully functional Active Directory lab environment.
 
-The lab is built to replicate real-world system administration responsibilities, including virtualisation, Active Directory, networking, firewall configuration, and troubleshooting.
+The lab was built across two platforms:
 
-This project serves as both a technical learning platform and a professional portfolio demonstrating hands-on infrastructure experience.
+* **Primary Environment:** Proxmox (bare-metal hypervisor)
+* **Secondary Environment:** Hyper-V (workstation-based)
+
+The goal was to simulate real-world enterprise infrastructure while developing practical skills in system administration and foundational security.
 
 ---
 
-## High-Level Architecture
+## Host Environments
 
+### Primary Host (Proxmox)
+
+* Platform: Proxmox VE
+* Type: Bare-metal (Type 1 hypervisor)
+* Purpose: Core lab environment
+
+#### Networking
+
+* Bridge: vmbr0 (bridged)
+* Allows:
+
+  * VM-to-VM communication
+  * Access to local network and internet
+  * Realistic enterprise-style networking
+
+---
+
+### Secondary Host (Hyper-V)
+
+* Platform: Microsoft Hyper-V (Alienware workstation)
+* Type: Type 1 hypervisor (hosted on Windows)
+* Purpose: Testing and rapid iteration
+
+#### Use Cases
+
+* Quick VM deployment
+* Testing configurations before Proxmox rollout
+* Comparing behaviour across hypervisors
+
+---
+
+## Lab Architecture
+
+| Role              | Hostname | OS                  | IP Address   |
+| ----------------- | -------- | ------------------- | ------------ |
+| Domain Controller | DC01     | Windows Server 2022 | 192.168.1.10 |
+| Client Machine    | CLIENT01 | Windows 10/11       | 192.168.1.50 |
+
+---
+
+## Build Process
+
+### 1. Domain Controller Deployment
+
+* Installed Windows Server 2022
+* Configured static IP
+* Installed AD DS role
+* Promoted to Domain Controller
+
+Configuration:
+
+* Forest: lab.local
+* DNS: Installed and configured automatically
+
+---
+
+### 2. Client VM Deployment
+
+* Created CLIENT01 in Proxmox
+* Configured:
+
+  * Machine: q35
+  * BIOS: OVMF (UEFI)
+  * Disk: VirtIO SCSI
+  * Network: VirtIO
+
+---
+
+### 3. Windows Installation Issues (Resolved)
+
+Issue:
+
+* No disk detected during installation
+
+Fix:
+
+* Loaded VirtIO driver:
+  vioscsi → w10 → amd64
+
+Post-install:
+
+* Installed virtio-win-guest-tools.exe
+
+---
+
+### 4. Network Configuration
+
+Configured static IP on CLIENT01:
+
+* IP Address: 192.168.1.50
+* Subnet Mask: 255.255.255.0
+* Gateway: 192.168.1.1
+* DNS Server: 192.168.1.10 (Domain Controller)
+
+---
+
+### 5. Domain Join (Troubleshooting)
+
+Issue:
+
+* "Active Directory Domain Controller could not be contacted"
+
+Root Cause:
+
+* DNS misconfiguration
+* IPv6 taking priority
+
+Fix:
+
+* Disabled IPv6
+* Set DNS to DC only
+
+Validation:
+
+* ping <DC-IP>
+* nslookup lab.local
+
+---
+
+### 6. Domain Join
+
+* Joined CLIENT01 to lab.local
+* Restarted system
+
+Verification:
+
+* whoami
+* systeminfo | findstr /B /C:"Domain"
+
+---
+
+## Active Directory Configuration
+
+### Organizational Unit Structure
+
+Created:
+
+* Users
+* Computers
+* Groups
+* Service Accounts
+
+Actions:
+
+* Moved CLIENT01 → Computers OU
+* Moved users → Users OU
+
+---
+
+### User Management
+
+#### Manual Creation
+
+* Created initial test users in ADUC
+
+#### PowerShell Automation
+
+```powershell
+Import-Module ActiveDirectory
+
+$users = @(
+    @{Name="Alice Brown"; Sam="abrown"},
+    @{Name="Tom White"; Sam="twhite"},
+    @{Name="Emma Green"; Sam="egreen"}
+)
+
+foreach ($user in $users) {
+    New-ADUser -Name $user.Name `
+        -SamAccountName $user.Sam `
+        -UserPrincipalName "$($user.Sam)@lab.local" `
+        -Path "OU=Users,DC=lab,DC=local" `
+        -AccountPassword (ConvertTo-SecureString "Password123!" -AsPlainText -Force) `
+        -Enabled $true
+}
 ```
-                [ ISP Router ]
-                      │
-              [ OPNsense Firewall ]
-                      │
-                   [ Switch ]
-                      │
-              ┌────────────────────┐
-              │   Proxmox Host     │
-              │                    │
-              │  DC01 (Server)     │
-              │  CLIENT01 (Win11)  │
-              │  Future VMs        │
-              └────────────────────┘
+
+---
+
+### Troubleshooting (PowerShell)
+
+Issues encountered:
+
+* Incorrect parameter:
+  UserPrincipleName → corrected to UserPrincipalName
+
+* Line continuation errors:
+  Caused parameters like -Enabled to fail
+
+* OU path issues:
+  OU vs CN confusion
+
+---
+
+### User Attribute Correction
+
+```powershell
+Set-ADUser sbrown -UserPrincipalName abrown@lab.local
+Set-ADUser sbrown -SamAccountName abrown
 ```
 
 ---
 
-## Core Technologies
+## Group Policy
 
-* Virtualisation: Proxmox VE
-* Operating Systems:
+### GPO Creation
 
-  * Windows Server 2022
-  * Windows 11 Pro
-* Directory Services: Active Directory Domain Services (AD DS)
-* Networking: Internal virtual networks, DNS, DHCP concepts
-* Firewall: OPNsense
-* Automation: PowerShell (in progress)
+* Name: Workstation Baseline
+* Created using Group Policy Management (gpmc.msc)
 
 ---
 
-## Repository Structure
+### Configuration
 
+Path:
+
+Computer Configuration
+→ Policies
+→ Windows Settings
+→ Security Settings
+→ Account Policies
+→ Password Policy
+
+Settings applied:
+
+* Minimum password length = 8
+* Password complexity = Enabled
+
+---
+
+### Linking
+
+* Linked at domain level: lab.local
+
+---
+
+### Deployment & Verification
+
+On CLIENT01:
+
+```powershell
+gpupdate /force
+gpresult /r
 ```
-/Active-Directory-Lab      → Domain setup, GPOs, users, permissions
-/Firewall-OPNsense         → Firewall configuration and rules
-/Network-Design            → IP scheme, topology, design decisions
-/Troubleshooting           → Real issues encountered and fixes
-/Automation-PowerShell     → Scripts and automation work
-/docs                      → Detailed build documentation
-/screenshots               → Visual proof of configuration
-README.md                  → Project overview (this file)
-```
+
+Validation:
+
+* GPO applied successfully
+* Weak passwords rejected
 
 ---
 
-## Key Features
+## Key Lessons Learned
 
-* Deployment of Active Directory Domain Controller (DC01)
-* Domain-joined Windows 11 client (CLIENT01)
-* Organisational Unit (OU) design and user management
-* Group Policy configuration (security and system control)
-* File share with NTFS and share permissions
-* OPNsense firewall setup and traffic control
-* Virtual machine provisioning and management via Proxmox
-* Structured troubleshooting and issue resolution logging
-
----
-
-## Troubleshooting and Real-World Issues
-
-This lab includes documented troubleshooting scenarios to reflect real IT support and infrastructure work:
-
-* VM network connectivity failures (APIPA addressing, ARP issues)
-* Hypervisor virtual switch misconfiguration
-* Windows Firewall blocking traffic (ICMP issues)
-* Domain join and DNS dependency problems
-
-Each issue is documented with:
-
-* Problem description
-* Root cause analysis
-* Resolution steps
+* DNS is critical for Active Directory functionality
+* Incorrect DNS prevents domain join
+* IPv6 can interfere in lab environments
+* OU structure is essential for scalability
+* PowerShell syntax must be exact
+* GPO scope determines effectiveness
 
 ---
 
 ## Skills Demonstrated
 
-* Virtualisation (Proxmox)
-* Active Directory administration
-* DNS and network configuration
-* Firewall configuration (OPNsense)
-* Group Policy management
-* File permissions and access control
-* PowerShell (automation in progress)
+* Active Directory deployment and management
+* DNS troubleshooting and resolution
+* Virtualisation using Proxmox and Hyper-V
+* Windows client/server integration
+* PowerShell automation
+* Group Policy configuration and enforcement
 * Structured troubleshooting methodology
 
 ---
 
-## Screenshots
+## Next Steps
 
-Screenshots are included in the `/screenshots` directory to demonstrate:
-
-* Running virtual machines
-* Active Directory configuration
-* Group Policy settings
-* Firewall interface and rules
-* Successful domain joins and file access
+* Implement role-based access control (RBAC)
+* Expand Group Policy configurations
+* Introduce security misconfigurations
+* Simulate privilege escalation scenarios
+* Add monitoring and logging
 
 ---
 
-## Detailed Documentation
+## Summary
 
-* Active Directory build: `/Active-Directory-Lab`
-* Firewall configuration: `/Firewall-OPNsense`
-* Network design: `/Network-Design`
-* Troubleshooting logs: `/Troubleshooting`
-* Additional notes: `/docs`
-
----
-
-## Project Roadmap
-
-Planned improvements to extend the lab:
-
-* VLAN implementation and network segmentation
-* Advanced firewall rules and monitoring
-* PowerShell automation for user and system management
-* Additional servers (e.g. file server, monitoring tools)
-* Simulated enterprise scenarios and helpdesk tickets
-* Backup and disaster recovery configuration
-
----
-
-## Purpose
-
-This project is designed to:
-
-* Reinforce hands-on infrastructure skills
-* Simulate real-world IT environments
-* Demonstrate practical knowledge to employers
-* Support progression into system administration and infrastructure roles
-
----
-
-## Author
-
-Built and maintained as part of continuous professional development in IT infrastructure and system administration.
+This lab demonstrates the ability to design, build, troubleshoot, and manage a Windows domain environment across multiple virtualisation platforms, reflecting real-world system administration and security practices.
 
