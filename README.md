@@ -186,7 +186,7 @@ foreach ($user in $users) {
         -SamAccountName $user.Sam `
         -UserPrincipalName "$($user.Sam)@lab.local" `
         -Path "OU=Users,DC=lab,DC=local" `
-        -AccountPassword (ConvertTo-SecureString "Password123!" -AsPlainText -Force) `
+        -AccountPassword (ConvertTo-SecureString "Redacted for security" -AsPlainText -Force) `
         -Enabled $true
 }
 ```
