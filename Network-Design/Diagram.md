@@ -6,7 +6,7 @@ This diagram provides a high-level logical overview of the homelab environment.
 
 ## Diagram
 
-![Enterprise Network Foundation](../docs/Diagrams/Enterprise%20Network%20Foundation.png)
+![Enterprise Network Foundation](../docs/Diagrams/Enterprise-Network-Foundation.png)
 
 ## Components
 
@@ -33,4 +33,4 @@ This diagram provides a high-level logical overview of the homelab environment.
 
 ## Test Image
 
-![Enterprise Network Foundation](../docs/Diagrams/Enterprise%20Network%20Foundation.png)
+![Enterprise Network Foundation](../docs/Diagrams/Enterprise-Network-Foundation.png)
