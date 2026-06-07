@@ -30,7 +30,7 @@ foreach ($user in $users) {
         -SamAccountName $user.Sam `
         -UserPrincipalName "$($user.Sam)@lab.local" `
         -Path "OU=Users,DC=lab,DC=local" `
-        -AccountPassword (ConvertTo-SecureString "Password123!" -AsPlainText -Force) `
+        -AccountPassword (ConvertTo-SecureString "Redacted for GitHub" -AsPlainText -Force) `
         -Enabled $true
 }
 ```
@@ -73,7 +73,7 @@ Get-ADUser abrown -Properties Enabled
 ## Reset User Password (Delegation Scenario)
 
 ```powershell
-Set-ADAccountPassword -Identity finance -Reset -NewPassword (ConvertTo-SecureString "NewPassword123!" -AsPlainText -Force)
+Set-ADAccountPassword -Identity finance -Reset -NewPassword (ConvertTo-SecureString "Redacted for GitHub" -AsPlainText -Force)
 ```
 
 ---
