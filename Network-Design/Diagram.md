@@ -31,6 +31,3 @@ This diagram provides a high-level logical overview of the homelab environment.
 - Ubuntu Server
 
 
-## Test Image
-
-![Enterprise Network Foundation](../docs/Diagrams/Enterprise-Network-Foundation.png)
