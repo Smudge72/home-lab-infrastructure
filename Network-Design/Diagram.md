@@ -1,24 +1,31 @@
-# Network Topology Diagram
+# Enterprise Network Foundation
 
-```mermaid
-graph LR
-    Internet(["☁ Internet"])
-    ISP["ISP Router\n(Upstream/Bridge)"]
-    OPN["OPNSense\nFirewall\n\nInter-VLAN routing &\nfirewall rules enforced here"]
-    SW["Cisco\nSwitch"]
+## Overview
 
-    MGMT["VLAN 10\nManagement"]
-    SRV["VLAN 20\nServers\n(Proxmox)"]
-    CLT["VLAN 30\nClients\n(Main PC)"]
-    LAB["VLAN 40\nLab"]
-    GST["VLAN 50\nGuest"]
+This diagram provides a high-level logical overview of the homelab environment.
 
-    Internet <--> ISP
-    ISP --> OPN
-    OPN -->|"Trunk Ports:\nVLAN 10, 20, 30, 40 & 50"| SW
-    SW --> MGMT
-    SW --> SRV
-    SW --> CLT
-    SW --> LAB
-    SW --> GST
-```
+## Diagram
+
+![Enterprise Network Foundation](../docs/Diagrams/Enterprise%20Network%20Foundation.png)
+
+## Components
+
+### VLAN 10 - Management
+
+- Switch Management
+- Proxmox Management
+- Admin Devices
+
+### VLAN 20 - Users
+
+- Windows 11 Client
+
+### VLAN 30 - Servers
+
+- Proxmox Host
+- DC01
+- Infrastructure Services
+
+### VLAN 40 - Lab
+
+- Ubuntu Server
