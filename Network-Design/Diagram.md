@@ -29,3 +29,8 @@ This diagram provides a high-level logical overview of the homelab environment.
 ### VLAN 40 - Lab
 
 - Ubuntu Server
+
+
+## Test Image
+
+![Enterprise Network Foundation](../docs/Diagrams/Enterprise%20Network%20Foundation.png)
