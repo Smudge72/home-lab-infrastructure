@@ -1,64 +1,110 @@
-# Home Lab Infrastructure
+# Enterprise Infrastructure & Security Homelab
 
 ## Overview
 
-This repository documents the design, deployment, troubleshooting and ongoing development of a personal enterprise-style IT infrastructure home lab.
+This repository documents the design, deployment, administration and troubleshooting of a multi-platform enterprise-style homelab.
 
-The purpose of this lab is to develop practical skills in infrastructure support, networking, systems administration, security engineering and technical documentation.
+The environment has been built to develop practical skills in:
 
-This project demonstrates hands-on experience with:
+* Infrastructure Engineering
+* Network Engineering
+* Systems Administration
+* Linux Administration
+* Active Directory
+* Virtualisation
+* Cyber Security
+* PowerShell Automation
 
-- Active Directory
-- Windows Server
-- DNS
-- Group Policy
-- Proxmox VE
-- OPNsense Firewall
-- Cisco CBS350 Managed Switching
-- VLANs and network segmentation
-- Ubuntu Server
-- PowerShell automation
-- Nmap and Wireshark
-- Technical documentation
+The objective is to gain hands-on experience with technologies commonly found in enterprise environments while creating a professional portfolio of documented projects and troubleshooting activities.
 
 ---
 
-## Lab Goals
+## Core Technologies
 
-- Build a realistic enterprise-style infrastructure environment
-- Practise 2nd/3rd line troubleshooting
-- Develop networking and infrastructure engineering skills
-- Improve security awareness through segmentation, access control and firewall rules
-- Create professional documentation suitable for an employer-facing technical portfolio
+### Infrastructure
+
+* Proxmox VE
+* Windows Server
+* Windows 11
+* Ubuntu Server
+
+### Networking
+
+* Cisco CBS350 Managed Switch
+* VLAN Segmentation
+* DHCP
+* DNS
+* Routing and Switching
+
+### Security
+
+* OPNsense Firewall
+* Network Segmentation
+* Access Control
+* Security Hardening
+
+### Administration
+
+* Active Directory Domain Services
+* Group Policy
+* PowerShell
+* Git & GitHub
 
 ---
 
-## Current Lab Components
+## Current Lab Architecture
 
-| Component | Purpose |
-|---|---|
-| OPNsense Firewall | Routing, firewalling, DHCP and network segmentation |
-| Cisco CBS350 Managed Switch | VLANs, trunking and access port configuration |
-| Proxmox VE | Virtualisation platform for lab servers and clients |
-| Windows Server | Active Directory, DNS and Group Policy |
-| Windows Client | Domain-joined endpoint testing |
-| Ubuntu Server | Linux administration and service testing |
-| Kali Linux | Security testing and network analysis |
+### Virtualisation Platform
 
----
+**Proxmox VE**
 
-## Network Design
+Provides the core virtualisation platform hosting Windows and Linux workloads used throughout the lab.
 
-The lab uses segmented VLANs to separate management, user, server and test environments.
+### Network Infrastructure
 
-| VLAN | Purpose |
-|---|---|
-| VLAN 10 | Management |
-| VLAN 20 | Users |
-| VLAN 30 | Servers |
-| VLAN 40 | Lab / Testing |
+**Cisco CBS350 Managed Switch**
 
-IP addressing has been intentionally redacted from public documentation.
+Configured to support:
+
+* Access Ports
+* Trunk Ports
+* VLAN Segmentation
+* Inter-device Connectivity
+
+### Firewall Platform
+
+**OPNsense**
+
+Configured to provide:
+
+* Routing
+* DHCP Services
+* VLAN Interfaces
+* DNS Forwarding
+* Firewall Policy Management
+
+### Active Directory Environment
+
+**Domain Services**
+
+* Active Directory Domain Services
+* Microsoft DNS
+* Organisational Units
+* Security Groups
+* Group Policy Management
+
+### Linux Environment
+
+**Ubuntu Server 24.04**
+
+Configured for:
+
+* User and Group Administration
+* Linux File Permissions
+* DNS Configuration
+* Network Troubleshooting
+* Package Management
+* SSH Administration
 
 ---
 
@@ -66,50 +112,153 @@ IP addressing has been intentionally redacted from public documentation.
 
 ### Infrastructure
 
-- Windows Server administration
-- Active Directory Domain Services
-- DNS configuration and troubleshooting
-- Group Policy configuration
-- Virtual machine deployment and management
-- Snapshot and recovery planning
+* Virtual Machine Deployment
+* Hypervisor Administration
+* System Configuration
+* Backup and Snapshot Management
 
 ### Networking
 
-- VLAN design and segmentation
-- Trunk and access port configuration
-- DHCP troubleshooting
-- DNS and name resolution troubleshooting
-- Inter-VLAN routing concepts
-- Cisco managed switch administration
-- Firewall rule design using OPNsense
+* VLAN Design
+* Switch Configuration
+* Trunking
+* DHCP Troubleshooting
+* DNS Troubleshooting
+* Network Connectivity Analysis
+
+### Windows Administration
+
+* Active Directory Deployment
+* User Management
+* Group Management
+* OU Design
+* Group Policy Configuration
+* DNS Administration
+
+### Linux Administration
+
+* User and Group Management
+* File Permissions
+* Package Management
+* Network Configuration
+* DNS Configuration
+* Command Line Administration
 
 ### Security
 
-- Network segmentation
-- Role-based access control
-- Firewall rule management
-- Endpoint and identity security awareness
-- Vulnerability discovery using Nmap
-- Packet analysis using Wireshark
-- Cyber Essentials-aligned security principles
+* Firewall Configuration
+* Network Segmentation
+* Access Control
+* Principle of Least Privilege
 
-### Automation & Documentation
+### Automation
 
-- PowerShell scripting for administration and reporting
-- GitHub-based technical documentation
-- Structured troubleshooting notes
-- Professional network diagrams using draw.io
+* PowerShell Scripting
+* Active Directory Automation
+* Administrative Task Automation
+
+---
+
+## Troubleshooting Methodology
+
+A major focus of this lab is developing structured troubleshooting skills.
+
+Typical workflow:
+
+1. Identify the issue
+2. Gather evidence
+3. Isolate potential causes
+4. Test assumptions
+5. Implement a fix
+6. Validate functionality
+7. Document findings
+
+---
+
+## Example Troubleshooting Scenarios
+
+### Active Directory DNS Resolution
+
+Issue:
+
+* Domain resources unavailable
+* Name resolution failures
+
+Investigation:
+
+* DNS configuration review
+* SRV record validation
+* Forwarder verification
+* Client DNS testing
+
+Resolution:
+
+* Corrected DNS configuration
+* Validated AD-integrated DNS functionality
+* Confirmed internal and external name resolution
+
+### VLAN Connectivity Investigation
+
+Issue:
+
+* Virtual machine unable to obtain expected network connectivity
+
+Investigation:
+
+* Proxmox VLAN tagging
+* Cisco switch VLAN membership
+* Trunk configuration
+* DHCP scope validation
+* Firewall interface verification
+
+Resolution:
+
+* Corrected network configuration
+* Validated VLAN operation
+* Confirmed end-to-end connectivity
 
 ---
 
 ## Repository Structure
 
 ```text
+active-directory/
 Automation/
+docs/
 Firewall/
 Network-Design/
 Troubleshooting/
-active-directory/
-docs/Diagrams/
-projects/project-01-network-foundation/
 screenshots/
+```
+
+---
+
+## Current Learning Focus
+
+* Cisco CCNA
+* Linux Administration
+* Infrastructure Engineering
+* Security Engineering
+* PowerShell Automation
+* Enterprise Troubleshooting
+
+---
+
+## Future Development
+
+Planned additions include:
+
+* Advanced VLAN Architecture
+* Network Monitoring
+* Centralised Logging
+* Vulnerability Assessment
+* Security Information and Event Management (SIEM)
+* Wazuh Deployment
+* Security Automation
+* Infrastructure as Code
+
+---
+
+## Professional Objective
+
+This homelab is maintained as a practical learning environment and technical portfolio to support progression into Infrastructure Engineering and Cyber Security Engineering roles.
