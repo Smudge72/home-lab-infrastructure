@@ -211,19 +211,19 @@ The goal of this lab is to simulate a real-world enterprise environment, focusin
 
 * Proxmox Host (Bare Metal)
 
-  * Management IP: 192.168.1.21
+  * Management IP: Redacted
 
 * Virtual Machines:
 
   * DC01 (Windows Server 2022)
 
     * Role: Domain Controller
-    * IP: 192.168.100.10
+    * IP: Redacted
 
   * Client01 (Windows 10/11)
 
     * Domain Joined
-    * IP: 192.168.100.20
+    * IP: Redacted
 
 ---
 
@@ -247,14 +247,14 @@ The goal of this lab is to simulate a real-world enterprise environment, focusin
 * Created bootable USB using Rufus
 * Installed Proxmox VE (Graphical mode)
 * Verified access via:
-  https://192.168.1.21:8006
+  https://Redacted
 
 ### 2. Network Configuration
 
 * Identified connectivity issue due to WiFi usage
 * Resolved by switching to Ethernet
 * Verified with:
-  ping 192.168.1.21
+  ping Redacted
 
 ### 3. Root Password Recovery
 
