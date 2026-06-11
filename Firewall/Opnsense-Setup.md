@@ -30,11 +30,11 @@ Create VLAN sub-interfaces on the LAN interface for each VLAN:
 
 | VLAN | Name     | Interface Tag (example) | LAN IP (gateway) |
 |------|----------|-------------------------|------------------|
-| 10   | MGMT     | `<iface>`.10            | 192.168.10.1/24  |
-| 20   | SERVERS  | `<iface>`.20            | 192.168.20.1/24  |
-| 30   | CLIENTS  | `<iface>`.30            | 192.168.30.1/24  |
-| 40   | LAB      | `<iface>`.40            | 192.168.40.1/24  |
-| 50   | GUEST    | `<iface>`.50            | 192.168.50.1/24  |
+| 10   | MGMT     | `<iface>`.10            | Redacted  |
+| 20   | SERVERS  | `<iface>`.20            | Redacted  |
+| 30   | CLIENTS  | `<iface>`.30            | Redacted  |
+| 40   | LAB      | `<iface>`.40            | Redacted  |
+| 50   | GUEST    | `<iface>`.50            | Redacted  |
 
 > **Note:** Replace `<iface>` with the actual LAN interface name detected during installation (e.g. `igb0`, `em0`, `vtnet0`). Check **Interfaces → Assignments** in the OPNsense UI to confirm the correct name.
 
@@ -42,7 +42,7 @@ Create VLAN sub-interfaces on the LAN interface for each VLAN:
 1. Select the parent LAN interface
 2. Set the VLAN tag (10, 20, 30, 40, 50)
 3. Assign each VLAN as a new interface and enable it
-4. Set the gateway IP for each interface (e.g. 192.168.10.1/24 for VLAN 10)
+4. Set the gateway IP for each interface (e.g. Redacted for VLAN 10)
 
 ---
 
@@ -70,11 +70,11 @@ Enable DHCP server on each VLAN interface:
 
 | VLAN | Subnet           | DHCP Range                      |
 |------|------------------|---------------------------------|
-| 10   | 192.168.10.0/24  | 192.168.10.100 – 192.168.10.200 |
-| 20   | 192.168.20.0/24  | 192.168.20.100 – 192.168.20.200 |
-| 30   | 192.168.30.0/24  | 192.168.30.100 – 192.168.30.200 |
-| 40   | 192.168.40.0/24  | 192.168.40.100 – 192.168.40.200 |
-| 50   | 192.168.50.0/24  | 192.168.50.100 – 192.168.50.200 |
+| 10   | Redacted         | Redacted |
+| 20   | Redacted         | Redacted |
+| 30   | Redacted         | Redacted |
+| 40   | Redacted         | Redacted |
+| 50   | Redacted         | Redacted |
 
 ---
 
