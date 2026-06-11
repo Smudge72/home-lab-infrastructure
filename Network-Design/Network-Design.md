@@ -8,11 +8,11 @@ See [Diagram.md](Diagram.md) for the full network topology diagram.
 
 | VLAN | Name     | Subnet           | Purpose                        | Key Devices        |
 |------|----------|------------------|--------------------------------|--------------------|
-| 10   | MGMT     | 192.168.10.0/24  | Network management             |                    |
-| 20   | SERVERS  | 192.168.20.0/24  | Virtualisation & services      | Proxmox            |
-| 30   | CLIENTS  | 192.168.30.0/24  | User machines                  | Main PC            |
-| 40   | LAB      | 192.168.40.0/24  | Testing environment            |                    |
-| 50   | GUEST    | 192.168.50.0/24  | Isolated internet access       |                    |
+| 10   | MGMT     | Redacted         | Network management             |                    |
+| 20   | SERVERS  | Redacted         | Virtualisation & services      | Proxmox            |
+| 30   | CLIENTS  | Redacted         | User machines                  | Main PC            |
+| 40   | LAB      | Redacted         | Testing environment            |                    |
+| 50   | GUEST    | Redacted         | Isolated internet access       |                    |
 
 ---
 
@@ -38,9 +38,9 @@ See [Diagram.md](Diagram.md) for the full network topology diagram.
 
 | Device        | IP Address        |
 |---------------|-------------------|
-| Firewall      | 192.168.X.1       |
-| Proxmox Host  | 192.168.20.5      |
-| Domain Ctrl   | 192.168.20.10     |
+| Firewall      | Redacted          |
+| Proxmox Host  | Redacted          |
+| Domain Ctrl   | Redacted          |
 
 ---
 
