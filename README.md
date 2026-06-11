@@ -4,7 +4,7 @@
 
 This repository documents the design, deployment, administration and troubleshooting of a multi-platform enterprise-style homelab.
 
-The environment has been built to develop practical skills in:
+The environment has been built to develop and demonstrate practical skills in:
 
 * Infrastructure Engineering
 * Network Engineering
