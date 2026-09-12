@@ -1,207 +1,132 @@
-# Project 01 - Enterprise Network Foundation
+# Network Foundation — OPNsense, VLANs and Virtualisation
+
+A segmented home-lab network supporting Windows infrastructure, virtual machines and administration exercises.
 
 ## Objective
 
-Design and implement a segmented enterprise-style network using OPNsense, Cisco switching and Proxmox virtualisation.
+Build a network that separates management, client, server and experimental workloads, with OPNsense as the intended control point for communication between network segments.
 
----
+The project develops practical skills in VLAN configuration, switching, firewall administration and troubleshooting across physical and virtual infrastructure.
 
-## Technologies Used
+## Lab Platforms
 
-- OPNsense Firewall
-- Cisco CBS350 Managed Switch
-- Proxmox VE
-- Microsoft Active Directory
-- Microsoft DNS
-- Ubuntu Server
-- Windows 11
-- VLAN Segmentation
+| Component | Role in the lab design |
+|---|---|
+| OPNsense firewall | VLAN interfaces, routing and network access policy |
+| Cisco CBS350 managed switch | Physical connectivity, access ports and VLAN trunks |
+| Proxmox VE | Virtual-machine hosting and virtual networking |
+| Windows Server and Microsoft DNS | Active Directory and internal name resolution |
+| Windows and Ubuntu systems | Client workloads and administration exercises |
 
----
+## Verified OPNsense Interface Mapping
 
-## Network Topology
+**Configuration review: 12 September 2026**
 
-[Network Diagram To Be Added]
+The following mapping was checked against screenshots of:
 
----
+- **Interfaces → Devices → VLAN**
+- **Interfaces → Assignments**
 
-## Network Design
+### Physical Interface Assignments
 
-The environment is segmented using dedicated VLANs to separate management, user, server and lab traffic.
+| Assignment | Identifier | Device |
+|---|---|---|
+| WAN | `wan` | `igc0` |
+| LAN | `lan` | `igc1` |
 
-| VLAN | Purpose |
-|--------|--------|
-| VLAN 10 | Management |
-| VLAN 20 | User Devices |
-| VLAN 30 | Server Infrastructure |
-| VLAN 40 | Testing and Lab Systems |
+### VLAN Devices and Assignments
 
----
+| VLAN tag | Purpose | OPNsense description | VLAN device | Assignment | Parent |
+|---|---|---|---|---|---|
+| 10 | Management | `VLAN10_Management` | `vlan03` | `opt3` | `igc1` |
+| 20 | Clients | `VLAN20_CLIENT` | `vlan01` | `opt1` | `igc1` |
+| 30 | Servers | `VLAN30_SERVERS` | `vlan02` | `opt2` | `igc1` |
+| 40 | Lab | `VLAN40_LAB` | `vlan04` | `opt4` | `igc1` |
 
-## Infrastructure Components
+The VLAN device names are not the VLAN tags. For example, `vlan01` carries tag **20**, not tag 1.
 
-### OPNsense Firewall
+The physical parent `igc1` is also assigned as LAN. Its separate addressing and the switch's untagged/native VLAN configuration are not established by these two screens.
 
-Responsibilities:
+**Guest VLAN 50:** mentioned in earlier documentation, but absent from the supplied OPNsense VLAN and assignment tables. It is not included as a configured OPNsense VLAN in this inventory.
 
-- Default gateway services
-- DHCP services
-- Inter-VLAN routing
-- Firewall policy enforcement
-- Internet access control
+## Design Intent
 
-### Cisco CBS350 Switch
+The network is organised around four purposes:
 
-Responsibilities:
+| Segment | Intended use |
+|---|---|
+| Management | Administration of infrastructure devices |
+| Clients | User-facing systems and domain-client exercises |
+| Servers | Directory services and infrastructure workloads |
+| Lab | Experimental systems and test workloads |
 
-- VLAN segmentation
-- Trunk configuration
-- Access port assignment
-- Layer 2 switching
+The security objective is to permit required communication between segments while restricting unnecessary access.
 
-### Proxmox VE
+That objective must be checked against the actual firewall rules and traffic tests; the existence of the VLAN interfaces alone is not evidence that the intended access restrictions are enforced.
 
-Responsibilities:
+## Documentation Reconciliation
 
-- Virtual machine hosting
-- Resource management
-- Infrastructure platform services
+Earlier repository documents disagreed about whether VLAN 20 or VLAN 30 contained clients and servers.
 
-### Active Directory
+The OPNsense configuration screenshots establish the mapping used here:
 
-Responsibilities:
+**VLAN 20 = Clients**  
+**VLAN 30 = Servers**
 
-- Centralised authentication
-- User management
-- Group management
-- Policy enforcement
+This table is the reference for correcting the remaining firewall guide, network-design notes and topology documentation.
 
-### Microsoft DNS
+The correction is to the documentation. It does not require changing VLAN numbers or interface assignments in the lab.
 
-Responsibilities:
+## Validation Record
 
-- Internal name resolution
-- Active Directory service discovery
-- Forwarding external DNS requests
+The original project write-up records successful DHCP lease assignment, internal and external DNS resolution, Active Directory authentication, internet connectivity, inter-VLAN communication and administrative access.
 
-### Ubuntu Administration Server
+Those are retained as historical build results. The configuration review above checks the visible VLAN definitions and assignments, rather than repeating those functional tests.
 
-Responsibilities:
+| Area | Evidence status |
+|---|---|
+| VLAN tags, descriptions and parent interface | Checked against OPNsense configuration screenshots |
+| Physical and VLAN interface assignments | Checked against OPNsense configuration screenshots |
+| Switch VLAN membership, access ports and trunks | Configuration evidence to capture |
+| VLAN subnets, gateway addresses and DHCP settings | Configuration evidence to capture |
+| DHCP, DNS, authentication and connectivity | Success recorded in the original project; dated retest evidence to capture |
+| Firewall access restrictions | Rule review and permitted/blocked traffic tests to capture |
 
-- Linux administration practice
-- User and group management
-- Permission management
-- System administration exercises
+For each functional test, record the source, destination, protocol or service, expected result and observed result.
 
----
+## Troubleshooting From the Original Build
 
-## Validation Testing
+### External DNS Resolution Failure
 
-The following tests were successfully completed:
+**Problem:** Internal systems could not resolve external DNS queries.
 
-- DHCP lease assignment
-- Internal DNS resolution
-- External DNS resolution
-- Active Directory authentication
-- Internet connectivity
-- Inter-VLAN communication
-- Administrative access to infrastructure devices
+**Investigation:** Checked client DNS configuration, internal zone resolution and DNS forwarding.
 
----
+**Recorded resolution:** Corrected the DNS forwarder configuration and restored external name resolution.
 
-## Troubleshooting Performed
+### VLAN Connectivity Failure
 
-### DNS Resolution Failure
+**Problem:** Systems on different VLANs could not communicate as expected.
 
-Problem:
+**Investigation:** Reviewed switch VLAN assignments, trunk configuration and firewall routing policies.
 
-Internal systems were unable to resolve external DNS queries.
+**Recorded resolution:** Corrected VLAN and routing configuration, restoring the expected communication paths.
 
-Investigation:
+The original notes describe the investigation and outcomes but do not preserve the exact configuration changes or test output. Future case records will include those details.
 
-- Verified DNS client configuration
-- Tested internal zone resolution
-- Reviewed DNS forwarding configuration
+## Next Documentation Tasks
 
-Resolution:
+- Align the remaining network and firewall documents with the reviewed interface mapping.
+- Add reviewed screenshots as supporting evidence.
+- Document the addressing plan, switch-port assignments and Proxmox network configuration.
+- Capture dated service tests and both permitted and blocked inter-VLAN traffic tests.
 
-DNS forwarder configuration was corrected and successful external name resolution was restored.
+Monitoring, centralised logging and configuration-backup automation remain future development work.
 
----
+## Related Projects
 
-### VLAN Connectivity Issue
+[Active Directory deployment and administration](../project-02-active-directory/README.md)  
+[Infrastructure troubleshooting case studies](../../Troubleshooting/Issues.md)  
+[PowerShell and Windows administration reference](../../Automation/PowerShell.md)
 
-Problem:
-
-Systems connected to different VLANs could not communicate as expected.
-
-Investigation:
-
-- Reviewed switch VLAN assignments
-- Verified trunk configuration
-- Checked firewall routing policies
-
-Resolution:
-
-VLAN and routing configuration were corrected, restoring expected communication paths.
-
----
-
-## Skills Demonstrated
-
-### Infrastructure Engineering
-
-- Network design
-- Virtualisation
-- Active Directory administration
-- DNS administration
-- DHCP administration
-
-### Networking
-
-- VLAN configuration
-- Trunking
-- Layer 2 switching
-- Routing concepts
-- Network troubleshooting
-
-### Security
-
-- Network segmentation
-- Firewall administration
-- Access control
-- Least privilege principles
-
-### Documentation
-
-- Technical documentation
-- Change tracking
-- Troubleshooting records
-- Infrastructure diagrams
-
----
-
-## Future Enhancements
-
-Planned improvements include:
-
-- Centralised logging
-- Security monitoring
-- Vulnerability scanning
-- SIEM integration
-- Configuration backup automation
-- Infrastructure monitoring
-- PowerShell automation
-- Linux automation
-
----
-
-## Repository References
-
-Related documentation can be found within:
-
-- Networking Documentation
-- Active Directory Documentation
-- Firewall Documentation
-- Automation Documentation
-- Troubleshooting Documentation
+[Return to the portfolio overview](../../README.md)
