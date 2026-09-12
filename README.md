@@ -1,264 +1,80 @@
-# Enterprise Infrastructure & Security Homelab
+# Infrastructure & Systems Administration Homelab
 
-## Overview
+Hands-on projects in Windows infrastructure, virtualisation, networking and troubleshooting.
 
-This repository documents the design, deployment, administration and troubleshooting of a multi-platform enterprise-style homelab.
+## About This Lab
 
-The environment has been built to develop and demonstrate practical skills in:
+I am a second-line IT administrator developing my skills for progression into infrastructure engineering and systems administration.
 
-* Infrastructure Engineering
-* Network Engineering
-* Systems Administration
-* Linux Administration
-* Active Directory
-* Virtualisation
-* Cyber Security
-* PowerShell Automation
+This repository documents my personal lab: what I built, how I configured it, the problems I encountered and how I checked the results.
 
-The objective is to gain hands-on experience with technologies commonly found in enterprise environments while creating a professional portfolio of documented projects and troubleshooting activities.
+The focus is practical understanding, not just getting through an installation. Each project aims to explain the decisions, troubleshooting and lessons behind the finished configuration.
 
----
+This is a personal learning environment, separate from my production responsibilities at work.
 
-## Core Technologies
+## Start Here
 
-### Infrastructure
+| Project | What it covers | Documentation status |
+|---|---|---|
+| [Active Directory Deployment and Administration](projects/project-02-active-directory/README.md) | Windows Server, domain-controller deployment, client domain join, organisational units, Group Policy and user administration | Original build documented; fresh validation evidence pending |
+| [Network Foundation](projects/project-01-network-foundation/README.md) | OPNsense, Cisco switching, Proxmox networking and VLAN segmentation | Existing project write-up; network records being reconciled |
+| [PowerShell Command Reference](Automation/PowerShell.md) | Commands and examples from Active Directory administration and troubleshooting exercises | Reference material, not a production-ready automation tool |
 
-* Proxmox VE
-* Windows Server
-* Windows 11
-* Ubuntu Server
+**Recommended starting point:** the Active Directory project contains the most complete account of implementation, troubleshooting and recorded validation.
 
-### Networking
+## Active Directory Project Highlights
 
-* Cisco CBS350 Managed Switch
-* VLAN Segmentation
-* DHCP
-* DNS
-* Routing and Switching
+The documented build includes:
 
-### Security
+- Deploying Windows Server 2022 as a domain controller with DNS.
+- Configuring and joining a Windows client to the lab domain.
+- Creating organisational units and managing test users through AD Users and Computers and PowerShell.
+- Configuring Group Policy and recording policy-processing checks.
 
-* OPNsense Firewall
-* Network Segmentation
-* Access Control
-* Security Hardening
+The project also explains where the original evidence is limited and what needs to be re-tested.
 
-### Administration
+## Troubleshooting Examples
 
-* Active Directory Domain Services
-* Group Policy
-* PowerShell
-* Git & GitHub
+| Problem | Action taken | Recorded result |
+|---|---|---|
+| Windows installer could not detect the virtual disk | Loaded the VirtIO storage driver during installation | Windows installation completed |
+| Client could not contact the domain controller | Corrected client DNS settings; IPv6 was also disabled during the original investigation | Domain join succeeded, but the separate effect of each change was not established |
+| PowerShell user-creation commands failed | Corrected parameter spelling, line continuation and the target directory path | Corrections documented in the administration exercise |
 
----
+See the [Active Directory case study](projects/project-02-active-directory/README.md#troubleshooting) for the context and limitations of these findings.
 
-## Current Lab Architecture
+## Lab Platforms
 
-### Virtualisation Platform
+The documented environment brings together:
 
-**Proxmox VE**
+| Area | Platforms and technologies |
+|---|---|
+| Virtualisation | Proxmox VE and Microsoft Hyper-V |
+| Windows infrastructure | Windows Server, Windows clients, Active Directory Domain Services, DNS and Group Policy |
+| Networking | Cisco CBS350 switching, OPNsense, VLANs and DHCP |
+| Administration | PowerShell and Windows administration tools |
 
-Provides the core virtualisation platform hosting Windows and Linux workloads used throughout the lab.
+The lab has evolved over time. Individual project pages distinguish the original build from current validation and planned work.
 
-### Network Infrastructure
+## Supporting Build Records
 
-**Cisco CBS350 Managed Switch**
+The [original build log](Network-Design/Build-Log.md) and [hardware rebuild notes](Network-Design/Hardware-Builds.md) preserve earlier stages of the project.
 
-Configured to support:
+These are historical working records. Some sections describe earlier configurations or plans and are being organised into clearer project documentation.
 
-* Access Ports
-* Trunk Ports
-* VLAN Segmentation
-* Inter-device Connectivity
+## Documentation Approach
 
-### Firewall Platform
+The standard I am working towards for each project is:
 
-**OPNsense**
+**Objective → Configuration → Troubleshooting → Validation → Lessons learned**
 
-Configured to provide:
+A successful workaround is not automatically a confirmed root-cause fix. Where the original testing did not isolate the cause, the documentation states that rather than presenting an assumption as a proven result.
 
-* Routing
-* DHCP Services
-* VLAN Interfaces
-* DNS Forwarding
-* Firewall Policy Management
+## Current Improvements
 
-### Active Directory Environment
+- Reconcile the network diagram, VLAN assignments and firewall documentation.
+- Add dated screenshots and command output to support the completed exercises.
+- Organise troubleshooting records into individual case studies.
+- Develop and test a standalone PowerShell administration script.
 
-**Domain Services**
-
-* Active Directory Domain Services
-* Microsoft DNS
-* Organisational Units
-* Security Groups
-* Group Policy Management
-
-### Linux Environment
-
-**Ubuntu Server 24.04**
-
-Configured for:
-
-* User and Group Administration
-* Linux File Permissions
-* DNS Configuration
-* Network Troubleshooting
-* Package Management
-* SSH Administration
-
----
-
-## Skills Demonstrated
-
-### Infrastructure
-
-* Virtual Machine Deployment
-* Hypervisor Administration
-* System Configuration
-* Backup and Snapshot Management
-
-### Networking
-
-* VLAN Design
-* Switch Configuration
-* Trunking
-* DHCP Troubleshooting
-* DNS Troubleshooting
-* Network Connectivity Analysis
-
-### Windows Administration
-
-* Active Directory Deployment
-* User Management
-* Group Management
-* OU Design
-* Group Policy Configuration
-* DNS Administration
-
-### Linux Administration
-
-* User and Group Management
-* File Permissions
-* Package Management
-* Network Configuration
-* DNS Configuration
-* Command Line Administration
-
-### Security
-
-* Firewall Configuration
-* Network Segmentation
-* Access Control
-* Principle of Least Privilege
-
-### Automation
-
-* PowerShell Scripting
-* Active Directory Automation
-* Administrative Task Automation
-
----
-
-## Troubleshooting Methodology
-
-A major focus of this lab is developing structured troubleshooting skills.
-
-Typical workflow:
-
-1. Identify the issue
-2. Gather evidence
-3. Isolate potential causes
-4. Test assumptions
-5. Implement a fix
-6. Validate functionality
-7. Document findings
-
----
-
-## Example Troubleshooting Scenarios
-
-### Active Directory DNS Resolution
-
-Issue:
-
-* Domain resources unavailable
-* Name resolution failures
-
-Investigation:
-
-* DNS configuration review
-* SRV record validation
-* Forwarder verification
-* Client DNS testing
-
-Resolution:
-
-* Corrected DNS configuration
-* Validated AD-integrated DNS functionality
-* Confirmed internal and external name resolution
-
-### VLAN Connectivity Investigation
-
-Issue:
-
-* Virtual machine unable to obtain expected network connectivity
-
-Investigation:
-
-* Proxmox VLAN tagging
-* Cisco switch VLAN membership
-* Trunk configuration
-* DHCP scope validation
-* Firewall interface verification
-
-Resolution:
-
-* Corrected network configuration
-* Validated VLAN operation
-* Confirmed end-to-end connectivity
-
----
-
-## Repository Structure
-
-```text
-active-directory/
-Automation/
-docs/
-Firewall/
-Network-Design/
-Troubleshooting/
-screenshots/
-```
-
----
-
-## Current Learning Focus
-
-* Cisco CCNA
-* Linux Administration
-* Infrastructure Engineering
-* Security Engineering
-* PowerShell Automation
-* Enterprise Troubleshooting
-
----
-
-## Future Development
-
-Planned additions include:
-
-* Advanced VLAN Architecture
-* Network Monitoring
-* Centralised Logging
-* Vulnerability Assessment
-* Security Information and Event Management (SIEM)
-* Wazuh Deployment
-* Security Automation
-* Infrastructure as Code
-
----
-
-## Professional Objective
-
-This homelab is maintained as a practical learning environment and technical portfolio to support progression into Infrastructure Engineering and Cyber Security Engineering roles.
+Monitoring, centralised logging and further security exercises are future additions, not completed capabilities.
