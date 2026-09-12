@@ -1,146 +1,123 @@
-m# OPNsense Setup
+# OPNsense — Interface Configuration and Firewall Policy
 
-OPNsense is used as the primary firewall and inter-VLAN router for the home lab. It sits between the ISP router (operating in upstream/bridge mode) and the Cisco CBS350 managed switch.
+Configuration notes for the home-lab firewall, covering interface assignments, VLANs and the visible access rules.
 
----
+## Review Summary
 
-## Hardware
+**Configuration review: 12 September 2026**
 
-- CWWK N97 Firewall Appliance
-- WAN interface: connected to ISP Router (upstream/bridge mode)
-- LAN interface: trunk link to Cisco CBS350 Switch (carries VLANs 10, 20, 30, 40 & 50)
+Reviewed the following OPNsense screens:
 
----
+- Interfaces → Devices → VLAN
+- Interfaces → Assignments
+- Firewall → Rules, with All rules selected
 
-## Initial Installation
+The interface mapping is documented below. The visible client, server and lab rules provide broad IPv4 access; restrictive inter-VLAN policy remains a hardening task.
 
-1. Download the latest OPNsense AMD64 ISO from [opnsense.org](https://opnsense.org/download/)
-2. Write the ISO to a USB drive using Balena Etcher or Rufus
-3. Boot the appliance from USB and follow the installer
-4. Set the root password during installation
-5. After reboot, assign interfaces via the console menu:
-   - WAN → physical interface connected to ISP router
-   - LAN → physical interface connected to Cisco switch
+This review records configuration rather than end-to-end traffic-test results. No firewall settings were changed during this documentation update.
 
----
+## Interface Configuration
 
-## VLAN Configuration
+### Physical Interfaces
 
-Create VLAN sub-interfaces on the LAN interface for each VLAN:
+| Assignment | Device |
+|---|---|
+| WAN | `igc0` |
+| LAN | `igc1` |
 
-| VLAN | Name     | Interface Tag (example) | LAN IP (gateway) |
-|------|----------|-------------------------|------------------|
-| 10   | MGMT     | `<iface>`.10            | Redacted  |
-| 20   | SERVERS  | `<iface>`.20            | Redacted  |
-| 30   | CLIENTS  | `<iface>`.30            | Redacted  |
-| 40   | LAB      | `<iface>`.40            | Redacted  |
-| 50   | GUEST    | `<iface>`.50            | Redacted  |
+### VLAN Interfaces
 
-> **Note:** Replace `<iface>` with the actual LAN interface name detected during installation (e.g. `igb0`, `em0`, `vtnet0`). Check **Interfaces → Assignments** in the OPNsense UI to confirm the correct name.
+All four VLAN devices use `igc1` as their parent.
 
-**Steps (Interfaces → Other Types → VLAN):**
-1. Select the parent LAN interface
-2. Set the VLAN tag (10, 20, 30, 40, 50)
-3. Assign each VLAN as a new interface and enable it
-4. Set the gateway IP for each interface (e.g. Redacted for VLAN 10)
+| VLAN | Purpose | Description | Device | Assignment |
+|---|---|---|---|---|
+| 10 | Management | `VLAN10_Management` | `vlan03` | `opt3` |
+| 20 | Clients | `VLAN20_CLIENT` | `vlan01` | `opt1` |
+| 30 | Servers | `VLAN30_SERVERS` | `vlan02` | `opt2` |
+| 40 | Lab | `VLAN40_LAB` | `vlan04` | `opt4` |
 
----
+The parent interface `igc1` also has a separate LAN assignment. Its addressing and the switch's untagged/native VLAN configuration require a separate check.
 
-## Firewall Rules (Inter-VLAN)
+VLAN 50 appeared in earlier planning notes but is not present in the reviewed VLAN or assignment tables.
 
-Inter-VLAN routing is enforced by OPNsense. Default policy: **deny all inter-VLAN traffic** unless explicitly permitted.
+The [network foundation project](../projects/project-01-network-foundation/README.md) contains the wider network design and validation record.
 
-| Source VLAN | Destination     | Action | Notes                                  |
-|-------------|-----------------|--------|----------------------------------------|
-| MGMT (10)   | Any             | Allow  | Full management access                 |
-| SERVERS (20)| CLIENTS (30)    | Allow  | Servers can reach clients              |
-| CLIENTS (30)| SERVERS (20)    | Allow  | Clients can reach servers              |
-| CLIENTS (30)| WAN             | Allow  | Internet access                        |
-| LAB (40)    | LAB (40)        | Allow  | Isolated lab traffic only              |
-| LAB (40)    | WAN             | Allow  | Internet access for lab                |
-| GUEST (50)  | WAN             | Allow  | Internet access only                   |
-| GUEST (50)  | Any VLAN        | Block  | No access to internal VLANs            |
-| Any         | Any             | Block  | Default deny                           |
+## Visible Firewall Rules
 
----
+The expanded Interface rules section shows six entries.
 
-## DHCP
+All six display the Pass action. Protocol, source port, destination and destination port are shown as `*`, meaning no restriction in those displayed fields.
 
-Enable DHCP server on each VLAN interface:
+| Interface | IP version | Source | Destination | Protocol / ports | Visible entries |
+|---|---|---|---|---|---|
+| LAN | IPv4 | LAN network | Any | Any | 1 |
+| LAN | IPv6 | LAN network | Any | Any | 1 |
+| VLAN20_CLIENT | IPv4 | VLAN20_CLIENT network | Any | Any | 1 |
+| VLAN30_SERVERS | IPv4 | VLAN30_SERVERS network | Any | Any | 1 |
+| VLAN40_LAB | IPv4 | VLAN40_LAB network | Any | Any | 2 |
 
-| VLAN | Subnet           | DHCP Range                      |
-|------|------------------|---------------------------------|
-| 10   | Redacted         | Redacted |
-| 20   | Redacted         | Redacted |
-| 30   | Redacted         | Redacted |
-| 40   | Redacted         | Redacted |
-| 50   | Redacted         | Redacted |
+The LAN entries have default allow-rule descriptions. The visible client, server and lab entries do not have descriptions.
 
----
+### What This Policy Means
 
-## DNS
+The visible VLAN rules are broad source-network-to-any permissions. They do not limit access to specific infrastructure services or to internet destinations.
 
-- OPNsense Unbound DNS resolver enabled
-- DNS forwarding to upstream resolver (e.g. 1.1.1.1, 8.8.8.8)
-- Local domain: `lab.local`
+An Any destination can include internal networks. OPNsense's default-deny behaviour applies when no permitting rule applies; it does not override a matching pass rule.
 
----
+Actual connectivity also depends on the complete ruleset, routing and destination systems.
 
-## Status
+**Current position: VLAN interfaces are configured, but the reviewed rules do not demonstrate least-privilege inter-VLAN isolation.**
 
-- [ ] Hardware received and OPNsense installed
-- [ ] Interfaces assigned (WAN/LAN)
-- [ ] VLAN sub-interfaces created
-- [ ] Firewall rules configured
-- [ ] DHCP enabled on all VLANs
-- [ ] DNS resolver configured
+Reference: [OPNsense firewall rules documentation](https://docs.opnsense.org/manual/firewall.html).
 
-## Interface Mapping
+## Findings to Carry Forward
 
-- igc0 → WAN (connected to ISP router)
-- igc1 → LAN (trunk to Cisco switch)
+| Finding | Follow-up |
+|---|---|
+| Broad IPv4 permissions on Clients, Servers and Lab | Define required traffic flows before replacing broad access with narrower rules |
+| Two VLAN40 entries with identical displayed fields | Compare full rule settings and purpose before deciding whether one is redundant |
+| Missing descriptions on the visible VLAN rules | Add meaningful purpose statements during a controlled rule-maintenance change |
+| No VLAN10-specific entry visible in the expanded interface section | Review the complete applicable rules and confirm the management access path |
+| A separate LAN IPv6 allow rule is visible | Include IPv6 addressing and policy in the review rather than assuming an IPv4 review covers it |
 
----
+The automatically generated rules were collapsed in the supplied screenshot. Their contents were not reviewed.
 
-## VLAN Configuration
+The absence of a visible VLAN10 entry is not proof that management traffic is blocked. Likewise, this screenshot alone does not establish whether services are exposed through WAN.
 
-- VLAN 10 – Management
-- VLAN 20 – Servers
-- VLAN 30 – Clients
-- VLAN 40 – Lab
-- VLAN 50 – Guest
+## Planned Hardening and Validation
 
----
+The next engineering task is to turn the required communication paths into a documented access policy.
 
-## Design Approach
+Before changing rules, preserve a private configuration backup and confirm a recovery path that does not depend solely on the connection being changed.
 
-Inter-VLAN routing is handled by the firewall to enforce security policies between network segments.
+Document which systems need access to directory services, DNS, administration interfaces and other lab services. Use those requirements to plan narrower permissions.
 
-Default deny rules are applied between VLANs, with explicit allow rules configured where required.
+Apply changes in small, reversible steps. Check required services still work and verify that traffic intended to be blocked actually fails.
 
-## Interface Mapping
+| Test record | Information to capture |
+|---|---|
+| Source | Device and network initiating the connection |
+| Destination | Target device or service |
+| Traffic | Protocol and destination port, where applicable |
+| Expected result | Allow or deny |
+| Observed result | Actual test outcome |
+| Supporting evidence | Relevant rule, log entry or diagnostic output |
+| Change record | Date, configuration change and rollback approach |
 
-- igc0 → WAN (connected to ISP router)
-- igc1 → LAN (trunk to Cisco switch)
+These are planned tasks, not completed controls or test results.
 
----
+Configuration exports should remain private rather than being committed to this public repository.
 
-## VLAN Configuration
+## Other Configuration Still to Document
 
-- VLAN 10 – Management
-- VLAN 20 – Servers
-- VLAN 30 – Clients
-- VLAN 40 – Lab
-- VLAN 50 – Guest
+The reviewed screens do not establish VLAN subnet addresses, gateway addresses, DHCP scopes, DNS forwarding, NAT settings or the operating mode of the upstream router.
 
----
+Those details will be captured from the relevant configuration screens rather than copied from earlier planning assumptions.
 
-## Example Firewall Rule
+## Related Documentation
 
-Allow:
-- Source: VLAN 30 (Clients)
-- Destination: VLAN 20 (Servers)
-- Port: 3389 (RDP)
+[Network foundation project](../projects/project-01-network-foundation/README.md)  
+[Active Directory project](../projects/project-02-active-directory/README.md)  
+[Troubleshooting case studies](../Troubleshooting/Issues.md)
 
-Purpose:
-Allow administrative access to servers from client machines.
+[Return to the portfolio overview](../README.md)
