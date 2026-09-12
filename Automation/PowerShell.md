@@ -1,240 +1,192 @@
-# PowerShell Commands – Active Directory Lab
+# PowerShell & Windows Administration Reference
 
-## Overview
+A task-based reference covering Active Directory administration, identity checks, network diagnostics and Group Policy.
 
-This document contains all PowerShell commands used during the setup, configuration, troubleshooting, and security testing of the Active Directory lab.
+## Purpose
+
+The original lab exercises used PowerShell to query users, create test accounts and correct account attributes. Windows command-line tools supported connectivity, policy and time-service checks.
+
+This page organises those activities into a practical reference. The account-creation and password-reset examples have been revised for safer handling and still require lab testing.
+
+This is a collection of separate examples, not a single script to run from start to finish.
+
+## Before Using the Examples
+
+Use an authorised lab administration machine with the Active Directory PowerShell module available.
+
+The domain, server, OU and account names below reflect the original lab examples. Verify them against the current environment before running any commands.
+
+Start with read-only checks. The account-change examples retain `-WhatIf`, which previews the intended operation without applying that change. A preview does not prove that a real operation will pass every permissions or policy check.
 
 ---
 
-## Active Directory Module
+## 1. Identity and Diagnostic Checks
 
-Import Active Directory module:
+These commands inspect the current environment without changing its configuration.
+
+| Command | Purpose |
+|---|---|
+| `hostname` | Identify the machine being used |
+| `whoami` | Identify the current user context |
+| `whoami /groups` | Inspect group information in the current security token |
+| `ipconfig /all` | Inspect interface addressing, DNS configuration and DHCP information |
+| `nslookup lab.local` | Query DNS for the original lab domain |
+| `gpresult /r` | Display a summary of Resultant Set of Policy information |
+| `w32tm /query /status` | Inspect Windows Time service status and its reported time source |
+
+These are Windows command-line utilities that can be run from PowerShell; they are not PowerShell cmdlets.
+
+Record the machine, user context and relevant output when using them in a troubleshooting case.
+
+References: [Microsoft gpresult documentation](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/gpresult) and [Windows Time service tools](https://learn.microsoft.com/en-us/windows-server/networking/windows-time-service/windows-time-service-tools-and-settings).
+
+## 2. Query Active Directory Users
+
+Load the module, select the lab domain controller and inspect a sample account:
 
 ```powershell
-Import-Module ActiveDirectory
+Import-Module ActiveDirectory -ErrorAction Stop
+
+$server = 'DC01.lab.local'
+
+Get-ADUser -Identity 'abrown' -Server $server -ErrorAction Stop |
+    Select-Object Name, SamAccountName, UserPrincipalName,
+        Enabled, DistinguishedName
 ```
 
+This retrieves account information; it does not change the user.
+
+Use the distinguished name to check where the account is located rather than assuming it is in the intended OU.
+
+Reference: [Microsoft Get-ADUser documentation](https://learn.microsoft.com/en-us/powershell/module/activedirectory/get-aduser).
+
 ---
 
-## Bulk User Creation
+## 3. Account Creation Exercise — Revised Preview
+
+The original exercise created three sample users using a loop.
+
+This revised version checks the target OU, skips existing account names and previews the creation of disabled accounts. Password assignment and account enablement are deliberately separate tasks.
+
+**Validation status:** revised reference example; not yet re-tested in the lab.
 
 ```powershell
-$users = @(
-    @{Name="Alice Brown"; Sam="abrown"},
-    @{Name="Tom White"; Sam="twhite"},
-    @{Name="Emma Green"; Sam="egreen"}
-)
+try {
+    Import-Module ActiveDirectory -ErrorAction Stop
 
-foreach ($user in $users) {
-    New-ADUser -Name $user.Name `
-        -SamAccountName $user.Sam `
-        -UserPrincipalName "$($user.Sam)@lab.local" `
-        -Path "OU=Users,DC=lab,DC=local" `
-        -AccountPassword (ConvertTo-SecureString "Redacted for GitHub" -AsPlainText -Force) `
-        -Enabled $true
+    $server = 'DC01.lab.local'
+    $targetOU = 'OU=Users,DC=lab,DC=local'
+
+    # Stop if the specified lab OU cannot be found.
+    $null = Get-ADOrganizationalUnit -Identity $targetOU `
+        -Server $server -ErrorAction Stop
+
+    $users = @(
+        @{ Name = 'Alice Brown'; Sam = 'abrown' }
+        @{ Name = 'Tom White';   Sam = 'twhite' }
+        @{ Name = 'Emma Green';  Sam = 'egreen' }
+    )
+
+    foreach ($user in $users) {
+        $sam = $user.Sam
+
+        $existing = Get-ADUser -Filter "SamAccountName -eq '$sam'" `
+            -Server $server -ErrorAction Stop
+
+        if ($existing) {
+            Write-Warning "Skipping existing account: $sam"
+            continue
+        }
+
+        # Splatting keeps the creation parameters together.
+        $parameters = @{
+            Name              = $user.Name
+            SamAccountName    = $sam
+            UserPrincipalName = "$sam@lab.local"
+            Path              = $targetOU
+            Server            = $server
+            Enabled           = $false
+            ErrorAction       = 'Stop'
+        }
+
+        # Preview only: no account is created while -WhatIf remains.
+        New-ADUser @parameters -WhatIf
+    }
+}
+catch {
+    throw "Account-creation preview stopped: $($_.Exception.Message)"
 }
 ```
 
+The duplicate check covers the sample account names; this is not a complete provisioning validation framework.
+
+Before any live test, review the target directory and proposed names. After an approved change, independently query the resulting objects and record their OU, identifiers and enabled state.
+
+References: [Microsoft New-ADUser documentation](https://learn.microsoft.com/en-us/powershell/module/activedirectory/new-aduser) and [Get-ADOrganizationalUnit documentation](https://learn.microsoft.com/en-us/powershell/module/activedirectory/get-adorganizationalunit).
+
+## 4. Password Reset — Revised Preview
+
+This example retrieves a specific lab account and prompts for a password as a secure string rather than embedding a password in the source.
+
+It retains `-WhatIf`, so the password reset is not applied.
+
+**Validation status:** revised reference example; not yet re-tested in the lab.
+
+```powershell
+Import-Module ActiveDirectory -ErrorAction Stop
+
+$server = 'DC01.lab.local'
+$account = Get-ADUser -Identity 'abrown' -Server $server -ErrorAction Stop
+
+$account | Select-Object Name, SamAccountName, DistinguishedName
+
+$newPassword = Read-Host 'Enter a new lab password' -AsSecureString
+
+try {
+    Set-ADAccountPassword -Identity $account -Server $server `
+        -Reset -NewPassword $newPassword -WhatIf -ErrorAction Stop
+}
+finally {
+    $newPassword.Dispose()
+}
+```
+
+For an actual reset, confirm the target account and authority to make the change. Password-policy compliance and the account's intended sign-in behaviour must be checked during the live test.
+
+Do not place real passwords in scripts, screenshots, documentation or commit messages.
+
+Reference: [Microsoft Set-ADAccountPassword documentation](https://learn.microsoft.com/en-us/powershell/module/activedirectory/set-adaccountpassword).
+
 ---
 
-## Modify User Attributes
+## 5. Group Policy — Inspect Before Refreshing
 
-Update User Principal Name and SamAccountName:
-
-```powershell
-Set-ADUser sbrown -UserPrincipalName abrown@lab.local
-Set-ADUser sbrown -SamAccountName abrown
-```
-
----
-
-## Query Active Directory Users
-
-List all users:
-
-```powershell
-Get-ADUser -Filter * | Select Name
-```
-
-Get specific user:
-
-```powershell
-Get-ADUser -Identity abrown
-```
-
-Check if account is enabled:
-
-```powershell
-Get-ADUser abrown -Properties Enabled
-```
-
----
-
-## Reset User Password (Delegation Scenario)
-
-```powershell
-Set-ADAccountPassword -Identity finance -Reset -NewPassword (ConvertTo-SecureString "Redacted for GitHub" -AsPlainText -Force)
-```
-
----
-
-## Group Policy Commands
-
-Force Group Policy update:
-
-```powershell
-gpupdate /force
-```
-
-View applied Group Policy:
+Inspect the currently reported policy results:
 
 ```powershell
 gpresult /r
 ```
 
----
-
-## Network Troubleshooting
-
-View full IP configuration:
+The following command is different: it requests policy reprocessing and can apply configuration changes. It is not a read-only diagnostic check.
 
 ```powershell
-ipconfig /all
+gpupdate /force
 ```
 
-Test connectivity:
+For a controlled policy test, capture the original result, make the intended policy change, refresh policy and inspect the result again.
 
-```powershell
-ping 192.168.1.10
-```
+Policy-processing output and the behaviour of the affected setting should both be checked.
 
-DNS lookup:
+References: [Microsoft gpresult documentation](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/gpresult) and [gpupdate documentation](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/gpupdate).
 
-```powershell
-nslookup lab.local
-```
+## Lessons From the Original Exercises
 
-Flush DNS cache:
+The original build recorded errors involving the spelling of `UserPrincipalName`, PowerShell line continuation and the distinction between OU and container paths.
 
-```powershell
-ipconfig /flushdns
-```
+The improved approach is to inspect the target first, keep parameters readable, stop on unexpected errors and verify the result separately from the command used to make the change.
 
----
+## Related Documentation
 
-## Time Synchronisation (Kerberos Fix)
-
-Force time resync:
-
-```powershell
-w32tm /resync
-```
-
-Restart time service:
-
-```powershell
-net stop w32time
-net start w32time
-```
-
-Check time source:
-
-```powershell
-w32tm /query /status
-```
-
-Set domain hierarchy sync:
-
-```powershell
-w32tm /config /syncfromflags:domhier /update
-```
-
----
-
-## System & Identity Checks
-
-Check current user:
-
-```powershell
-whoami
-```
-
-Check group membership:
-
-```powershell
-whoami /groups
-```
-
-Check machine name:
-
-```powershell
-hostname
-```
-
----
-
-## Service Management
-
-Check Windows Search service:
-
-```powershell
-Get-Service WSearch
-```
-
----
-
-## RSAT Installation (Client Management Tools)
-
-Install Active Directory tools:
-
-```powershell
-Get-WindowsCapability -Name RSAT* -Online | Where-Object Name -like "*ActiveDirectory*" | Add-WindowsCapability -Online
-```
-
----
-
-## Running CMD from PowerShell
-
-Open Command Prompt:
-
-```powershell
-cmd
-```
-
-Run as admin:
-
-```powershell
-Start-Process cmd -Verb runAs
-```
-
----
-
-## Shutdown Commands
-
-Shutdown machine:
-
-```powershell
-shutdown /s /t 0
-```
-
-Restart machine:
-
-```powershell
-shutdown /r /t 0
-```
-
-Log off:
-
-```powershell
-shutdown /l
-```
-
----
-
-## Key Takeaways
-
-* PowerShell enables automation of Active Directory tasks
-* Small syntax errors can break execution
-* DNS and time synchronisation are critical for AD functionality
-* Delegated permissions can be abused if misconfigured
-* Administrative tools (RSAT) allow remote management of AD
+[Active Directory project](../projects/project-02-active-directory/README.md)  
+[Troubleshooting case studies](../Troubleshooting/Issues.md)  
+[Return to the portfolio overview](../README.md)
